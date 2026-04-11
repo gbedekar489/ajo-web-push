@@ -1,0 +1,159 @@
+<!doctype html>
+<html>
+<head>
+  <title>Shop - Smart Notifications</title>
+
+  <!-- Web SDK -->
+  <script>
+    !function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||[])
+    .push(o),n[o]=function(){var u=arguments;return new Promise(function(i,l){
+    n[o].q.push([i,l,u])})},n[o].q=[])})}(window,["alloy"]);
+  </script>
+  <script async src="https://cdn1.adoberesources.net/alloy/2.32.0/alloy.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #f5f5f5;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    button {
+      padding: 10px;
+      width: 100%;
+      margin-top: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .primary {
+      background: black;
+      color: white;
+    }
+
+    .status {
+      font-size: 12px;
+      margin-top: 8px;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🛍️ Smart Shop</h1>
+
+<div class="grid">
+
+  <!-- Product 1 -->
+  <div class="card">
+    <h3>📱 iPhone 15</h3>
+    <p>$999</p>
+    <button class="primary" onclick="subscribe('iPhone 15')">
+      🔔 Notify me when price drops
+    </button>
+    <div id="status-iPhone 15" class="status"></div>
+  </div>
+
+  <!-- Product 2 -->
+  <div class="card">
+    <h3>🎧 Sony Headphones</h3>
+    <p>$299</p>
+    <button class="primary" onclick="subscribe('Sony Headphones')">
+      🔔 Notify me
+    </button>
+    <div id="status-Sony Headphones" class="status"></div>
+  </div>
+
+  <!-- Product 3 -->
+  <div class="card">
+    <h3>⌚ Apple Watch</h3>
+    <p>$399</p>
+    <button class="primary" onclick="subscribe('Apple Watch')">
+      🔔 Notify me
+    </button>
+    <div id="status-Apple Watch" class="status"></div>
+  </div>
+
+  <!-- Product 4 -->
+  <div class="card">
+    <h3>💻 MacBook Air</h3>
+    <p>$1199</p>
+    <button class="primary" onclick="subscribe('MacBook Air')">
+      🔔 Notify me
+    </button>
+    <div id="status-MacBook Air" class="status"></div>
+  </div>
+
+</div>
+
+<script>
+  const CONFIG = {
+    datastreamId: "YOUR_DATASTREAM_ID",
+    orgId: "YOUR_ORG_ID@AdobeOrg",
+    pushNotifications: {
+      vapidPublicKey: "YOUR_PUBLIC_VAPID_KEY",
+      appId: "my-first-push",
+      trackingDatasetId: "YOUR_DATASET_ID"
+    }
+  };
+
+  async function init() {
+    await alloy("configure", CONFIG);
+
+    await navigator.serviceWorker.register("/alloyServiceWorker.js");
+    await navigator.serviceWorker.ready;
+
+    console.log("✅ SDK ready");
+  }
+
+  init();
+
+  // 🎯 CORE FUNCTION
+  async function subscribe(productName) {
+    const permission = await Notification.requestPermission();
+
+    if (permission !== "granted") {
+      alert("Notifications blocked ❌");
+      return;
+    }
+
+    // 🔥 Send push subscription
+    await alloy("sendPushSubscription");
+
+    // 🧠 Store interest (VERY IMPORTANT for personalization)
+    await alloy("sendEvent", {
+      xdm: {
+        eventType: "product.subscription",
+        productListItems: [
+          {
+            name: productName
+          }
+        ]
+      }
+    });
+
+    document.getElementById("status-" + productName).innerText =
+      "✅ Subscribed for " + productName;
+  }
+</script>
+
+</body>
+</html>
