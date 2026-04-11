@@ -105,24 +105,22 @@
 </div>
 
 <script>
-  const CONFIG = {
-    datastreamId: "YOUR_DATASTREAM_ID",
-    orgId: "YOUR_ORG_ID@AdobeOrg",
-    pushNotifications: {
-      vapidPublicKey: "YOUR_PUBLIC_VAPID_KEY",
-      appId: "my-first-push",
-      trackingDatasetId: "YOUR_DATASET_ID"
-    }
-  };
+   async function init() {
+  const res = await fetch("/config");
+  const CONFIG = await res.json();
+  console.log("Loaded config:", CONFIG);
 
-  async function init() {
-    await alloy("configure", CONFIG);
+// 2. Wait for Alloy to be available
+if (typeof alloy !== "function") {
+  console.error("❌ Alloy not loaded");
+  return;
+}
 
-    await navigator.serviceWorker.register("/alloyServiceWorker.js");
-    await navigator.serviceWorker.ready;
+// 3. Configure Web SDK
+await alloy("configure", CONFIG);
 
-    console.log("✅ SDK ready");
-  }
+console.log("✅ Adobe configured from env");
+}
 
   init();
 
