@@ -105,15 +105,19 @@
 </div>
 
 <script>
-     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/alloyServiceWorker.js")
-        .then(() => console.log("Service Worker registered"))
-        .catch(err => console.error("SW registration failed:", err));
-    }
+   
    async function init() {
   const res = await fetch("/config");
   const CONFIG = await res.json();
   console.log("Loaded config:", CONFIG);
+  if ("serviceWorker" in navigator) {
+      await navigator.serviceWorker.register("/alloyServiceWorker.js", { scope: "/" });
+      await navigator.serviceWorker.ready;
+      console.log("✅ Service worker registered and ready");
+    } else {
+      console.error("Service workers are not supported in this browser");
+    }
+  }
 
 // 2. Wait for Alloy to be available
 if (typeof alloy !== "function") {
@@ -127,11 +131,11 @@ await alloy("configure", CONFIG);
 console.log("✅ Adobe configured from env");
 }
 
-  init();
+init().catch(console.error);
 
   // 🎯 CORE FUNCTION
   async function subscribe(productName) {
-    await navigator.serviceWorker.ready;
+    
     const permission = await Notification.requestPermission();
 
     if (permission !== "granted") {
