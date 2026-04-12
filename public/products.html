@@ -130,7 +130,7 @@ init().catch(console.error);
 
   // 🎯 CORE FUNCTION
 
-  async function subscribe(productName) {
+  /* async function subscribe(productName) {
     const permission = await Notification.requestPermission();
 
     if (permission !== "granted") {
@@ -156,8 +156,8 @@ init().catch(console.error);
     document.getElementById("status-" + productName).innerText =
       "✅ Subscribed for " + productName;
 }
-
- /*  async function subscribe(productName) {
+ */
+   async function subscribe(productName) {
     
     const permission = await Notification.requestPermission();
 
@@ -183,7 +183,7 @@ init().catch(console.error);
 
     document.getElementById("status-" + productName).innerText =
       "✅ Subscribed for " + productName;
-  } */
+  } 
 </script>
 
 </body>
