@@ -105,6 +105,11 @@
 </div>
 
 <script>
+     if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/alloyServiceWorker.js")
+        .then(() => console.log("Service Worker registered"))
+        .catch(err => console.error("SW registration failed:", err));
+    }
    async function init() {
   const res = await fetch("/config");
   const CONFIG = await res.json();
@@ -126,6 +131,7 @@ console.log("✅ Adobe configured from env");
 
   // 🎯 CORE FUNCTION
   async function subscribe(productName) {
+    await navigator.serviceWorker.ready;
     const permission = await Notification.requestPermission();
 
     if (permission !== "granted") {
