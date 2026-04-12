@@ -129,7 +129,35 @@
 init().catch(console.error);
 
   // 🎯 CORE FUNCTION
+
   async function subscribe(productName) {
+    const permission = await Notification.requestPermission();
+
+    if (permission !== "granted") {
+      alert("Notifications blocked ❌");
+      return;
+    }
+
+    // This one call does EVERYTHING:
+    // 1. Gets the browser token
+    // 2. Updates the Profile for AJO
+    // 3. Sends the Product Name for personalization
+    await alloy("sendPushSubscription", {
+      xdm: {
+        eventType: "product.subscription",
+        productListItems: [
+          {
+            name: productName
+          }
+        ]
+      }
+    });
+
+    document.getElementById("status-" + productName).innerText =
+      "✅ Subscribed for " + productName;
+}
+
+ /*  async function subscribe(productName) {
     
     const permission = await Notification.requestPermission();
 
@@ -155,7 +183,7 @@ init().catch(console.error);
 
     document.getElementById("status-" + productName).innerText =
       "✅ Subscribed for " + productName;
-  }
+  } */
 </script>
 
 </body>
