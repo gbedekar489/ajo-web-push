@@ -107,29 +107,24 @@
 <script>
    
    async function init() {
-  const res = await fetch("/config");
-  const CONFIG = await res.json();
-  console.log("Loaded config:", CONFIG);
-  if ("serviceWorker" in navigator) {
+    const res = await fetch("/config");
+    const CONFIG = await res.json();
+    console.log("Loaded config:", CONFIG);
+
+    if (typeof alloy !== "function") {
+      console.error("❌ Alloy not loaded");
+      return;
+    }
+
+    await alloy("configure", CONFIG);
+    console.log("✅ Adobe configured from env");
+
+    if ("serviceWorker" in navigator) {
       await navigator.serviceWorker.register("/alloyServiceWorker.js", { scope: "/" });
       await navigator.serviceWorker.ready;
       console.log("✅ Service worker registered and ready");
-    } else {
-      console.error("Service workers are not supported in this browser");
     }
   }
-
-// 2. Wait for Alloy to be available
-if (typeof alloy !== "function") {
-  console.error("❌ Alloy not loaded");
-  return;
-}
-
-// 3. Configure Web SDK
-await alloy("configure", CONFIG);
-
-console.log("✅ Adobe configured from env");
-
 
 init().catch(console.error);
 
