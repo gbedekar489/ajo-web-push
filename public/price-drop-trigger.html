@@ -82,10 +82,11 @@
         await alloy("sendEvent", {
           xdm: {
             eventType: "price.drop",
-            productName: productName,
-            oldPrice: oldPrice,
-            newPrice: newPrice,
-            currency: currency
+            productListNames: [
+                {
+                    name: productName
+                }
+            ]
           }
         });
 
