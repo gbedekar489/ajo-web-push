@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Price Drop Trigger</title>
+
+  <script>
+    !function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||[]).push(o),n[o]=function(){var u=arguments;return new Promise(function(i,l){n[o].q.push([i,l,u])})},n[o].q=[])})}(window,["alloy"]);
+  </script>
+  <script async src="https://cdn1.adoberesources.net/alloy/2.32.0/alloy.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f6f7fb;
+      margin: 0;
+      padding: 24px;
+    }
+    .card {
+      max-width: 640px;
+      margin: 0 auto;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    }
+    .product {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      background: #111827;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .status {
+      margin-top: 12px;
+      min-height: 20px;
+      color: #065f46;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Price Drop Event Trigger</h1>
+    <p>Click a button to send a <code>price.drop</code> event to AJO.</p>
+
+    <div class="product">
+      <h3>iPhone 15</h3>
+      <p>Old price: $999 → New price: $899</p>
+      <button onclick="triggerPriceDrop('iPhone 15', 999, 899, 'USD')">Trigger price drop</button>
+      <div id="status-iphone-15" class="status"></div>
+    </div>
+
+    <div class="product">
+      <h3>Apple Watch</h3>
+      <p>Old price: $399 → New price: $349</p>
+      <button onclick="triggerPriceDrop('Apple Watch', 399, 349, 'USD')">Trigger price drop</button>
+      <div id="status-apple-watch" class="status"></div>
+    </div>
+  </div>
+
+  <script>
+    async function init() {
+      const res = await fetch("/config");
+      const CONFIG = await res.json();
+
+      await alloy("configure", CONFIG);
+      console.log("Adobe configured");
+    }
+
+    async function triggerPriceDrop(productName, oldPrice, newPrice, currency) {
+      try {
+        await alloy("sendEvent", {
+          xdm: {
+            eventType: "price.drop",
+            productName: productName,
+            oldPrice: oldPrice,
+            newPrice: newPrice,
+            currency: currency
+          }
+        });
+
+        const id = productName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+        document.getElementById(`status-${id}`).innerText =
+          `✅ Sent price.drop for ${productName}`;
+      } catch (e) {
+        console.error(e);
+        const id = productName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+        document.getElementById(`status-${id}`).innerText =
+          `❌ Failed to send event`;
+      }
+    }
+
+    init().catch(console.error);
+  </script>
+</body>
+</html>
