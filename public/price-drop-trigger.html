@@ -76,16 +76,18 @@
       await alloy("configure", CONFIG);
       console.log("Adobe configured");
     }
+    
 
     async function triggerPriceDrop(productName, oldPrice, newPrice, currency) {
       try {
         await alloy("sendEvent", {
           xdm: {
             eventType: "price.drop",
-            productListNames: [
+            productListItems: [
                 {
                     name: productName
                 }
+                
             ]
           }
         });
