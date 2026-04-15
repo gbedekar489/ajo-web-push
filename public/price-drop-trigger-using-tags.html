@@ -25,13 +25,15 @@
     function triggerPriceDrop(productName) {
       window.adobeDataLayer.push({
         event: "price.drop",
-        _techmarketingdemos:{
+        
         productListItems: [
           {
-            name: productName
+            name: productName,
+            sku:"4904847"
           }
+          
         ]
-        }
+        
       });
 
       console.log("Pushed to data layer:", productName);
