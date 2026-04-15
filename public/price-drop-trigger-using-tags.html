@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://assets.adobedtm.com/b5cbd1a1220e/a4fa49b9649b/launch-a4db376ed7a9-development.min.js" async></script>
+  <title>Price Drop Trigger</title>
+
+  <script>
+    window.adobeDataLayer = window.adobeDataLayer || [];
+  </script>
+</head>
+<body>
+  <h1>Price Drop Event Trigger</h1>
+
+  <button onclick="triggerPriceDrop('iPhone 15')">
+    Trigger iPhone 15
+  </button>
+
+  <button onclick="triggerPriceDrop('Apple Watch')">
+    Trigger Apple Watch
+  </button>
+
+  <script>
+    function triggerPriceDrop(productName) {
+      window.adobeDataLayer.push({
+        event: "price.drop",
+        productListItems: [
+          {
+            name: productName
+          }
+        ]
+      });
+
+      console.log("Pushed to data layer:", productName);
+    }
+  </script>
+</body>
+</html>
