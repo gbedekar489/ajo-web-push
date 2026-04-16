@@ -3,7 +3,6 @@
 <head>
   <title>Shop - Smart Notifications</title>
 
-  <!-- Web SDK -->
   <script>
     !function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||[])
     .push(o),n[o]=function(){var u=arguments;return new Promise(function(i,l){
@@ -53,6 +52,7 @@
       font-size: 12px;
       margin-top: 8px;
       color: green;
+      min-height: 16px;
     }
   </style>
 </head>
@@ -62,51 +62,56 @@
 
 <div class="grid">
 
-  <!-- Product 1 -->
   <div class="card">
     <h3>📱 iPhone 15</h3>
     <p>$999</p>
     <button class="primary" onclick="subscribe('iPhone 15')">
       🔔 Notify me when price drops
     </button>
-    <div id="status-iPhone 15" class="status"></div>
+    <div id="status-iphone-15" class="status"></div>
   </div>
 
-  <!-- Product 2 -->
   <div class="card">
     <h3>🎧 Sony Headphones</h3>
     <p>$299</p>
     <button class="primary" onclick="subscribe('Sony Headphones')">
       🔔 Notify me
     </button>
-    <div id="status-Sony Headphones" class="status"></div>
+    <div id="status-sony-headphones" class="status"></div>
   </div>
 
-  <!-- Product 3 -->
   <div class="card">
     <h3>⌚ Apple Watch</h3>
     <p>$399</p>
     <button class="primary" onclick="subscribe('Apple Watch')">
       🔔 Notify me
     </button>
-    <div id="status-Apple Watch" class="status"></div>
+    <div id="status-apple-watch" class="status"></div>
   </div>
 
-  <!-- Product 4 -->
   <div class="card">
     <h3>💻 MacBook Air</h3>
     <p>$1199</p>
     <button class="primary" onclick="subscribe('MacBook Air')">
       🔔 Notify me
     </button>
-    <div id="status-MacBook Air" class="status"></div>
+    <div id="status-macbook-air" class="status"></div>
   </div>
 
 </div>
 
 <script>
-   
-   async function init() {
+  function slugify(text) {
+    return text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  }
+
+  function setStatus(productName, message) {
+    const id = "status-" + slugify(productName);
+    const el = document.getElementById(id);
+    if (el) el.innerText = message;
+  }
+
+  async function init() {
     const res = await fetch("/config");
     const CONFIG = await res.json();
     console.log("Loaded config:", CONFIG);
@@ -126,64 +131,40 @@
     }
   }
 
-init().catch(console.error);
+  async function sendPushSubscriptionOncePerDay() {
+    const today = new Date().toISOString().slice(0, 10);
+    const lastSent = localStorage.getItem("alloy_push_last_sent");
 
-  // 🎯 CORE FUNCTION
-
-  /* async function subscribe(productName) {
-    const permission = await Notification.requestPermission();
-
-    if (permission !== "granted") {
-      alert("Notifications blocked ❌");
+    if (lastSent === today) {
+      console.log("Push subscription already sent today");
       return;
     }
 
-    // This one call does EVERYTHING:
-    // 1. Gets the browser token
-    // 2. Updates the Profile for AJO
-    // 3. Sends the Product Name for personalization
-    await alloy("sendPushSubscription", {
-      xdm: {
-        eventType: "product.subscription",
-        productListItems: [
-          {
-            name: productName
-          }
-        ]
-      }
-    });
-
-    document.getElementById("status-" + productName).innerText =
-      "✅ Subscribed for " + productName;
-}
- */
-   async function subscribe(productName) {
-    
-    const permission = await Notification.requestPermission();
-
-    if (permission !== "granted") {
-      alert("Notifications blocked ❌");
-      return;
-    }
-
-    // 🔥 Send push subscription
     await alloy("sendPushSubscription");
+    localStorage.setItem("alloy_push_last_sent", today);
+    console.log("✅ Push subscription sent");
+  }
 
-    // 🧠 Store interest (VERY IMPORTANT for personalization)
-    await alloy("sendEvent", {
-      xdm: {
-        eventType: "product.subscription",
-        productListItems: [
-          {
-            name: productName
-          }
-        ]
+  async function subscribe(productName) {
+    try {
+      const permission = await Notification.requestPermission();
+
+      if (permission !== "granted") {
+        alert("Notifications blocked ❌");
+        setStatus(productName, "❌ Notifications blocked");
+        return;
       }
-    });
 
-    document.getElementById("status-" + productName).innerText =
-      "✅ Subscribed for " + productName;
-  } 
+      await sendPushSubscriptionOncePerDay();
+
+      setStatus(productName, "✅ Subscribed for " + productName);
+    } catch (err) {
+      console.error(err);
+      setStatus(productName, "❌ Subscription failed");
+    }
+  }
+
+  init().catch(console.error);
 </script>
 
 </body>
