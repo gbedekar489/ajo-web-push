@@ -1,0 +1,48 @@
+<script>
+    const OPT_IN_KEY = "price_drop_opt_in_at";
+    const OPT_IN_WINDOW_MS = 24 * 60 * 60 * 1000;
+  
+    function hasOptedInWithinLast24Hours() {
+      const lastOptIn = localStorage.getItem(OPT_IN_KEY);
+      if (!lastOptIn) return false;
+  
+      const elapsed = Date.now() - Number(lastOptIn);
+      return elapsed < OPT_IN_WINDOW_MS;
+    }
+  
+    function markOptInNow() {
+      localStorage.setItem(OPT_IN_KEY, String(Date.now()));
+    }
+  
+    function updateEnableButton() {
+      const btn = document.getElementById("enableBtn");
+      if (!btn) return;
+  
+      const optedIn = hasOptedInWithinLast24Hours();
+      btn.disabled = optedIn;
+      btn.innerText = optedIn ? "Notifications enabled" : "Enable notifications";
+      setBannerStatus(optedIn ? "✅ Notifications are already enabled." : "");
+    }
+  
+    async function enableNotifications() {
+      try {
+        const permission = await Notification.requestPermission();
+  
+        if (permission !== "granted") {
+          setBannerStatus("❌ Notifications blocked");
+          return;
+        }
+  
+        if (!hasOptedInWithinLast24Hours()) {
+          await alloy("sendPushSubscription");
+          markOptInNow();
+        }
+  
+        updateEnableButton();
+        setBannerStatus("✅ Price drop notifications enabled.");
+      } catch (err) {
+        console.error(err);
+        setBannerStatus("❌ Failed to enable notifications");
+      }
+    }
+  </script>
