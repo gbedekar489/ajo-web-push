@@ -1,48 +1,207 @@
-<script>
-    const OPT_IN_KEY = "price_drop_opt_in_at";
-    const OPT_IN_WINDOW_MS = 24 * 60 * 60 * 1000;
-  
-    function hasOptedInWithinLast24Hours() {
-      const lastOptIn = localStorage.getItem(OPT_IN_KEY);
-      if (!lastOptIn) return false;
-  
-      const elapsed = Date.now() - Number(lastOptIn);
-      return elapsed < OPT_IN_WINDOW_MS;
-    }
-  
-    function markOptInNow() {
-      localStorage.setItem(OPT_IN_KEY, String(Date.now()));
-    }
-  
-    function updateEnableButton() {
-      const btn = document.getElementById("enableBtn");
-      if (!btn) return;
-  
-      const optedIn = hasOptedInWithinLast24Hours();
-      btn.disabled = optedIn;
-      btn.innerText = optedIn ? "Notifications enabled" : "Enable notifications";
-      setBannerStatus(optedIn ? "✅ Notifications are already enabled." : "");
-    }
-  
-    async function enableNotifications() {
-      try {
-        const permission = await Notification.requestPermission();
-  
-        if (permission !== "granted") {
-          setBannerStatus("❌ Notifications blocked");
-          return;
-        }
-  
-        if (!hasOptedInWithinLast24Hours()) {
-          await alloy("sendPushSubscription");
-          markOptInNow();
-        }
-  
-        updateEnableButton();
-        setBannerStatus("✅ Price drop notifications enabled.");
-      } catch (err) {
-        console.error(err);
-        setBannerStatus("❌ Failed to enable notifications");
-      }
-    }
+<!doctype html>
+<html>
+<head>
+  <title>Shop - Smart Notifications</title>
+
+  <script>
+    !function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||[])
+    .push(o),n[o]=function(){var u=arguments;return new Promise(function(i,l){
+    n[o].q.push([i,l,u])})},n[o].q=[])})}(window,["alloy"]);
   </script>
+  <script async src="https://cdn1.adoberesources.net/alloy/2.32.0/alloy.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 30px;
+      margin: 0;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    .banner {
+      max-width: 900px;
+      margin: 0 auto 20px auto;
+      background: #111827;
+      color: white;
+      padding: 18px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .banner h2 {
+      margin: 0 0 6px 0;
+      font-size: 18px;
+    }
+
+    .banner p {
+      margin: 0 0 12px 0;
+      opacity: 0.9;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .banner button {
+      padding: 10px 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: white;
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .banner button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .banner .status {
+      margin-top: 10px;
+      font-size: 13px;
+      opacity: 0.95;
+      min-height: 18px;
+    }
+
+    .grid {
+      max-width: 900px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .card h3 {
+      margin-top: 0;
+    }
+
+    .card p {
+      margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🛍️ Smart Shop</h1>
+
+<div class="banner">
+  <h2>Enable price drop notifications</h2>
+  <p>
+    Turn on notifications once to receive price drop alerts for this site.
+    You will not be prompted again for 24 hours.
+  </p>
+  <button id="enableBtn" onclick="enableNotifications()">Enable notifications</button>
+  <div id="banner-status" class="status"></div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h3>📱 iPhone 15</h3>
+    <p>$999</p>
+  </div>
+
+  <div class="card">
+    <h3>🎧 Sony Headphones</h3>
+    <p>$299</p>
+  </div>
+
+  <div class="card">
+    <h3>⌚ Apple Watch</h3>
+    <p>$399</p>
+  </div>
+
+  <div class="card">
+    <h3>💻 MacBook Air</h3>
+    <p>$1199</p>
+  </div>
+</div>
+
+<script>
+  const OPT_IN_KEY = "price_drop_opt_in_at";
+  const OPT_IN_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+  function setBannerStatus(message) {
+    const el = document.getElementById("banner-status");
+    if (el) el.innerText = message;
+  }
+
+  function hasOptedInWithinLast24Hours() {
+    const lastOptIn = localStorage.getItem(OPT_IN_KEY);
+    if (!lastOptIn) return false;
+
+    const elapsed = Date.now() - Number(lastOptIn);
+    return elapsed < OPT_IN_WINDOW_MS;
+  }
+
+  function markOptInNow() {
+    localStorage.setItem(OPT_IN_KEY, String(Date.now()));
+  }
+
+  function updateEnableButton() {
+    const btn = document.getElementById("enableBtn");
+    if (!btn) return;
+
+    const optedIn = hasOptedInWithinLast24Hours();
+    btn.disabled = optedIn;
+    btn.innerText = optedIn ? "Notifications enabled" : "Enable notifications";
+    setBannerStatus(optedIn ? "✅ Notifications are already enabled." : "");
+  }
+
+  async function init() {
+    const res = await fetch("/config");
+    const CONFIG = await res.json();
+
+    if (typeof alloy !== "function") {
+      console.error("❌ Alloy not loaded");
+      setBannerStatus("❌ Alloy not loaded");
+      return;
+    }
+
+    await alloy("configure", CONFIG);
+
+    if ("serviceWorker" in navigator) {
+      await navigator.serviceWorker.register("/alloyServiceWorker.js", { scope: "/" });
+      await navigator.serviceWorker.ready;
+    }
+
+    updateEnableButton();
+  }
+
+  async function enableNotifications() {
+    try {
+      const permission = await Notification.requestPermission();
+
+      if (permission !== "granted") {
+        setBannerStatus("❌ Notifications blocked");
+        return;
+      }
+
+      if (!hasOptedInWithinLast24Hours()) {
+        await alloy("sendPushSubscription");
+        markOptInNow();
+      }
+
+      updateEnableButton();
+      setBannerStatus("✅ Price drop notifications enabled.");
+    } catch (err) {
+      console.error(err);
+      setBannerStatus("❌ Failed to enable notifications");
+    }
+  }
+
+  init().catch(console.error);
+</script>
+
+</body>
+</html>
