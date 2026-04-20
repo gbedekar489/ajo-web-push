@@ -3,107 +3,221 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://assets.adobedtm.com/b5cbd1a1220e/a4fa49b9649b/launch-a4db376ed7a9-development.min.js" async></script>
   <title>Price Drop Trigger</title>
 
   <script>
-    !function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||[]).push(o),n[o]=function(){var u=arguments;return new Promise(function(i,l){n[o].q.push([i,l,u])})},n[o].q=[])})}(window,["alloy"]);
+    window.adobeDataLayer = window.adobeDataLayer || [];
   </script>
-  <script async src="https://cdn1.adoberesources.net/alloy/2.32.0/alloy.min.js"></script>
 
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f6f7fb;
+      background: #f4f6f9;
       margin: 0;
-      padding: 24px;
+      padding: 40px;
+      text-align: center;
     }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: #555;
+      margin-bottom: 30px;
+    }
+
+    .grid {
+      max-width: 1000px;
+      margin: 0 auto 24px auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
     .card {
-      max-width: 640px;
-      margin: 0 auto;
-      background: #fff;
-      border: 1px solid #e5e7eb;
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-    }
-    .product {
-      border: 1px solid #e5e7eb;
+      background: white;
       border-radius: 12px;
-      padding: 16px;
-      margin-top: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border 0.2s ease;
+      border: 2px solid transparent;
+      cursor: pointer;
+      text-align: left;
+      position: relative;
+      user-select: none;
     }
-    button {
-      border: 0;
-      border-radius: 10px;
-      padding: 12px 16px;
-      background: #111827;
-      color: #fff;
-      font-weight: 600;
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    }
+
+    .card.selected {
+      border-color: #2563eb;
+      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.18);
+    }
+
+    .card input[type="checkbox"] {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      transform: scale(1.2);
       cursor: pointer;
     }
+
+    .card h3 {
+      margin: 0 0 10px;
+      padding-right: 28px;
+    }
+
+    .card p {
+      margin: 0 0 8px;
+      color: #555;
+    }
+
+    .price {
+      font-weight: bold;
+      color: #111827;
+      margin-bottom: 12px;
+    }
+
+    .controls {
+      margin-top: 10px;
+    }
+
+    .trigger-btn {
+      padding: 12px 18px;
+      border: none;
+      border-radius: 8px;
+      background: #2563eb;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    .trigger-btn:hover {
+      background: #1d4ed8;
+    }
+
+    .trigger-btn:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+
     .status {
-      margin-top: 12px;
+      margin-top: 16px;
       min-height: 20px;
-      color: #065f46;
+      color: #111827;
+      font-weight: 500;
     }
   </style>
 </head>
+
 <body>
-  <div class="card">
-    <h1>Price Drop Event Trigger</h1>
-    <p>Click a button to send a <code>price.drop</code> event to AJO.</p>
+  <h1>📉 Price Drop Event Trigger</h1>
+  <div class="subtitle">Select one or more products and send a simulated price drop event.</div>
 
-    <div class="product">
-      <h3>iPhone 15</h3>
-      <p>Old price: $999 → New price: $899</p>
-      <button onclick="triggerPriceDrop('iPhone 15', 999, 899, 'USD')">Trigger price drop</button>
-      <div id="status-iphone-15" class="status"></div>
-    </div>
+  <div class="grid">
+    <label class="card">
+      <input type="checkbox" value="iPhone 15" data-sku="4904847" data-price="$999">
+      <h3>📱 iPhone 15</h3>
+      <p class="price">$999</p>
+      <p>Trigger a price drop event for this product.</p>
+    </label>
 
-    <div class="product">
-      <h3>Apple Watch</h3>
-      <p>Old price: $399 → New price: $349</p>
-      <button onclick="triggerPriceDrop('Apple Watch', 399, 349, 'USD')">Trigger price drop</button>
-      <div id="status-apple-watch" class="status"></div>
-    </div>
+    <label class="card">
+      <input type="checkbox" value="Apple Watch" data-sku="4904848" data-price="$399">
+      <h3>⌚ Apple Watch</h3>
+      <p class="price">$399</p>
+      <p>Trigger a price drop event for this product.</p>
+    </label>
+
+    <label class="card">
+      <input type="checkbox" value="Sony Headphones" data-sku="4904849" data-price="$299">
+      <h3>🎧 Sony Headphones</h3>
+      <p class="price">$299</p>
+      <p>Trigger a price drop event for this product.</p>
+    </label>
+
+    <label class="card">
+      <input type="checkbox" value="MacBook Air" data-sku="4904850" data-price="$1199">
+      <h3>💻 MacBook Air</h3>
+      <p class="price">$1199</p>
+      <p>Trigger a price drop event for this product.</p>
+    </label>
+  </div>
+
+  <div class="controls">
+    <button id="triggerBtn" class="trigger-btn" onclick="triggerSelectedProducts()" disabled>
+      Trigger Price Drop
+    </button>
+    <div id="status" class="status"></div>
   </div>
 
   <script>
-    async function init() {
-      const res = await fetch("/config");
-      const CONFIG = await res.json();
+    const cards = document.querySelectorAll(".card");
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    const triggerBtn = document.getElementById("triggerBtn");
+    const statusEl = document.getElementById("status");
 
-      await alloy("configure", CONFIG);
-      console.log("Adobe configured");
+    function setStatus(message) {
+      statusEl.innerText = message || "";
     }
-    
 
-    async function triggerPriceDrop(productName, oldPrice, newPrice, currency) {
-      try {
-        await alloy("sendEvent", {
-          xdm: {
-            eventType: "price.drop",
-            productListItems: [
-                {
-                    name: productName
-                }
-                
-            ]
-          }
-        });
+    function updateSelection() {
+      let selectedCount = 0;
 
-        const id = productName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-        document.getElementById(`status-${id}`).innerText =
-          `✅ Sent price.drop for ${productName}`;
-      } catch (e) {
-        console.error(e);
-        const id = productName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-        document.getElementById(`status-${id}`).innerText =
-          `❌ Failed to send event`;
+      cards.forEach(card => card.classList.remove("selected"));
+
+      checkboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+          selectedCount++;
+          checkbox.closest(".card").classList.add("selected");
+        }
+      });
+
+      triggerBtn.disabled = selectedCount === 0;
+      setStatus(selectedCount > 0 ? `${selectedCount} product(s) selected.` : "");
+    }
+
+    checkboxes.forEach(checkbox => {
+      checkbox.addEventListener("change", updateSelection);
+    });
+
+    cards.forEach(card => {
+      card.addEventListener("click", (e) => {
+        if (e.target.tagName.toLowerCase() !== "input") {
+          const input = card.querySelector('input[type="checkbox"]');
+          input.checked = !input.checked;
+          updateSelection();
+        }
+      });
+    });
+
+    function triggerSelectedProducts() {
+      const selected = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'));
+
+      if (selected.length === 0) {
+        setStatus("Please select at least one product first.");
+        return;
       }
-    }
 
-    init().catch(console.error);
+      const productListItems = selected.map(item => ({
+        name: item.value,
+        SKU: item.dataset.sku
+      }));
+
+      window.adobeDataLayer.push({
+        event: "price.drop",
+        productListItems: productListItems
+      });
+
+      setStatus(`✅ price.drop event sent for ${selected.length} product(s).`);
+      console.log("Pushed to data layer:", productListItems);
+    }
   </script>
 </body>
 </html>
