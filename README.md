@@ -12,8 +12,10 @@ It covers the full flow:
 
 ## 🚀 Live Demo
 
-Try the application here:  
-👉 https://your-app.onrender.com
+Subscribe to notification:  
+👉 https://ajo-web-push.onrender.com/
+Trigger Price Drop Event
+https://ajo-web-push.onrender.com/price-drop-trigger.html
 
 ---
 
